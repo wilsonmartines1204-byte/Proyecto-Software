@@ -1,0 +1,99 @@
+<%- include('../partials/head') %>
+<div class="pagina-titulo">
+  <h1>Gestion de usuarios</h1>
+</div>
+
+<% if (typeof query !== 'undefined' && query.error) { %><div class="alerta error"><%= query.error %></div><% } %>
+
+<div class="panel">
+  <h2>Nuevo usuario</h2>
+  <form method="POST" action="/usuarios">
+    <div class="fila-campos">
+      <div class="campo">
+        <label for="codigo">Codigo</label>
+        <input type="text" id="codigo" name="codigo" placeholder="U-0008">
+      </div>
+      <div class="campo">
+        <label for="nombre">Nombre completo *</label>
+        <input type="text" id="nombre" name="nombre" required>
+      </div>
+      <div class="campo">
+        <label for="email">Correo *</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="campo">
+        <label for="password">Contrasena *</label>
+        <input type="password" id="password" name="password" required minlength="6">
+      </div>
+      <div class="campo">
+        <label for="rol">Rol *</label>
+        <select id="rol" name="rol" required>
+          <% roles.forEach(function(r) { %><option value="<%= r %>"><%= r %></option><% }) %>
+        </select>
+      </div>
+    </div>
+    <button class="boton" type="submit">Crear usuario</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Usuarios registrados (<%= usuarios.length %>)</h2>
+  <table class="tabla">
+    <thead>
+      <tr><th>Codigo</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Registro</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+      <% usuarios.forEach(function(u) { %>
+        <tr>
+          <td><%= u.codigo || '—' %></td>
+          <td><%= u.nombre %></td>
+          <td><%= u.email %></td>
+          <td><span class="insignia ins-rol"><%= u.rol %></span></td>
+          <td><span class="insignia <%= u.activo ? 'ins-RESUELTA' : 'ins-RECHAZADA' %>"><%= u.activo ? 'Activo' : 'Inactivo' %></span></td>
+          <td class="texto-suave"><%= u.creado_en %></td>
+          <td class="acciones">
+            <details class="detalle-edicion">
+              <summary class="boton chico secundario">Editar</summary>
+              <div class="edicion-capa">
+                <div class="edicion-caja">
+                  <div class="edicion-cabecera">
+                    <h3>Editar usuario</h3>
+                    <button class="edicion-cerrar" type="button" aria-label="Cerrar"><%- include('../partials/icono', { n: 'cerrar' }) %></button>
+                  </div>
+                  <form method="POST" action="/usuarios/<%= u.id %>">
+                    <input type="hidden" name="id" value="<%= u.id %>">
+                    <input type="hidden" name="activoEstado" value="1">
+                    <div class="campo">
+                      <label>Nombre</label>
+                      <input type="text" name="nombre" value="<%= u.nombre %>" required>
+                    </div>
+                    <div class="campo">
+                      <label>Correo</label>
+                      <input type="email" name="email" value="<%= u.email %>" required>
+                    </div>
+                    <div class="campo">
+                      <label>Rol</label>
+                      <select name="rol">
+                        <% roles.forEach(function(r) { %>
+                          <option value="<%= r %>" <%= u.rol === r ? 'selected' : '' %>><%= r %></option>
+                        <% }) %>
+                      </select>
+                    </div>
+                    <div class="campo">
+                      <label><input type="checkbox" name="activo" value="on" <%= u.activo ? 'checked' : '' %>> Cuenta activa</label>
+                    </div>
+                    <div class="edicion-pie">
+                      <button class="boton chico secundario" type="button" data-edicion-cancelar>Cancelar</button>
+                      <button class="boton chico" type="submit">Guardar</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </details>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/footer') %>

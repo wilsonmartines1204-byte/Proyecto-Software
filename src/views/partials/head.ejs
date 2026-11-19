@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= titulo %></title>
+  <link rel="stylesheet" href="/css/estilos.css">
+  <script>
+    (function () {
+      try {
+        var v = localStorage.getItem('sgsu-lateral-oculto');
+        if (v === null) v = window.matchMedia('(max-width: 1024px)').matches ? '1' : '0';
+        if (v === '1') document.documentElement.classList.add('lateral-oculto');
+      } catch (e) { /* sin almacenamiento */ }
+    })();
+  </script>
+</head>
+<body>
+<% if (typeof usuario !== 'undefined' && usuario) { %>
+  <%- include('../partials/nav') %>
+<% } %>

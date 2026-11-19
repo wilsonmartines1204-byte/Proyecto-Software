@@ -1,0 +1,74 @@
+<%- include('../partials/head') %>
+<div class="pagina-titulo">
+  <h1>Gestion de categorias</h1>
+</div>
+
+<% if (typeof query !== 'undefined' && query.error) { %><div class="alerta error"><%= query.error %></div><% } %>
+
+<div class="panel">
+  <h2>Nueva categoria</h2>
+  <form method="POST" action="/categorias">
+    <div class="fila-campos">
+      <div class="campo">
+        <label for="nombre">Nombre *</label>
+        <input type="text" id="nombre" name="nombre" required placeholder="Ej. Deportes">
+      </div>
+      <div class="campo" style="grid-column: span 2;">
+        <label for="descripcion">Descripcion</label>
+        <input type="text" id="descripcion" name="descripcion" placeholder="Breve descripcion del tipo de servicio">
+      </div>
+    </div>
+    <button class="boton" type="submit">Crear categoria</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Categorias (<%= categorias.length %>)</h2>
+  <table class="tabla">
+    <thead>
+      <tr><th>Nombre</th><th>Descripcion</th><th>Estado</th><th>Registro</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+      <% categorias.forEach(function(c) { %>
+        <tr>
+          <td><strong><%= c.nombre %></strong></td>
+          <td><%= c.descripcion || '—' %></td>
+          <td><span class="insignia <%= c.activa ? 'ins-RESUELTA' : 'ins-RECHAZADA' %>"><%= c.activa ? 'Activa' : 'Inactiva' %></span></td>
+          <td class="texto-suave"><%= c.creado_en %></td>
+          <td class="acciones">
+            <details class="detalle-edicion">
+              <summary class="boton chico secundario">Editar</summary>
+              <div class="edicion-capa">
+                <div class="edicion-caja">
+                  <div class="edicion-cabecera">
+                    <h3>Editar categoria</h3>
+                    <button class="edicion-cerrar" type="button" aria-label="Cerrar"><%- include('../partials/icono', { n: 'cerrar' }) %></button>
+                  </div>
+                  <form method="POST" action="/categorias/<%= c.id %>">
+                    <input type="hidden" name="activaEstado" value="1">
+                    <div class="campo">
+                      <label>Nombre</label>
+                      <input type="text" name="nombre" value="<%= c.nombre %>" required>
+                    </div>
+                    <div class="campo">
+                      <label>Descripcion</label>
+                      <input type="text" name="descripcion" value="<%= c.descripcion || '' %>">
+                    </div>
+                    <div class="campo">
+                      <label><input type="checkbox" name="activa" value="on" <%= c.activa ? 'checked' : '' %>> Categoria activa</label>
+                    </div>
+                    <div class="edicion-pie">
+                      <button class="boton chico secundario" type="button" data-edicion-cancelar>Cancelar</button>
+                      <button class="boton chico" type="submit">Guardar</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </details>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/footer') %>

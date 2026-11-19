@@ -1,0 +1,75 @@
+﻿<aside class="lateral" id="lateral">
+  <a class="lateral-marca" href="/">
+    <img class="lateral-escudo" src="/img/escudo-cul.png" alt="Escudo CUL">
+    <span class="lateral-logo-texto">CUL</span>
+  </a>
+  <div class="lateral-regla"></div>
+  <div class="lateral-titulo">
+    <span>Sistema de Gestion de<br>Servicios y Solicitudes<br>Universitarias</span>
+  </div>
+  <nav class="lateral-menu">
+    <a href="/" class="<%= titulo === 'Panel principal' ? 'activo' : '' %>">
+      <%- include('../partials/icono', { n: 'inicio' }) %> Inicio
+    </a>
+    <a href="/solicitudes" class="<%= !titulo.includes('Registrar') && (titulo.includes('Solicitud') || titulo.includes('solicitud')) ? 'activo' : '' %>">
+      <%- include('../partials/icono', { n: 'documento' }) %> Solicitudes
+    </a>
+    <% if (usuario.rol === 'estudiante') { %>
+      <a href="/solicitudes/nueva" class="<%= titulo.includes('Registrar solicitud') ? 'activo' : '' %>">
+        <%- include('../partials/icono', { n: 'mas' }) %> Nueva solicitud
+      </a>
+    <% } %>
+    <% if (usuario.rol === 'administrador') { %>
+      <a href="/usuarios" class="<%= titulo.includes('usuarios') ? 'activo' : '' %>">
+        <%- include('../partials/icono', { n: 'usuarios' }) %> Usuarios
+      </a>
+      <a href="/categorias" class="<%= titulo.includes('categorias') || titulo.includes('Gestion de categorias') ? 'activo' : '' %>">
+        <%- include('../partials/icono', { n: 'capas' }) %> Categorias
+      </a>
+    <% } %>
+    <% if (usuario.rol === 'administrador' || usuario.rol === 'supervisor') { %>
+      <a href="/reportes" class="<%= titulo.includes('Reportes') || titulo.includes('reportes') ? 'activo' : '' %>">
+        <%- include('../partials/icono', { n: 'grafica' }) %> Reportes
+      </a>
+    <% } %>
+    <a href="/notificaciones" class="<%= titulo.includes('Notificaciones') ? 'activo' : '' %>">
+      <%- include('../partials/icono', { n: 'campana' }) %> Notificaciones
+      <% if (typeof noLeidas !== 'undefined' && noLeidas > 0) { %><span class="lateral-contador"><%= noLeidas %></span><% } %>
+    </a>
+  </nav>
+</aside>
+
+<div class="zona">
+  <header class="superior">
+    <button class="superior-menu" type="button" id="boton-lateral" aria-label="Mostrar u ocultar el menu">
+      <%- include('../partials/icono', { n: 'menu' }) %>
+    </button>
+    <div class="superior-derecha">
+      <a class="superior-campana" href="/notificaciones" aria-label="Notificaciones">
+        <%- include('../partials/icono', { n: 'campana' }) %>
+        <% if (typeof noLeidas !== 'undefined' && noLeidas > 0) { %><span class="superior-punto"></span><% } %>
+      </a>
+      <div class="usuario-pill">
+        <button class="usuario-pill-boton" type="button" id="boton-usuario">
+          <span class="usuario-avatar"><%- include('../partials/icono', { n: 'persona' }) %></span>
+          <span class="usuario-datos">
+            <strong><%= usuario.nombre %></strong>
+            <span><%= usuario.rol %></span>
+          </span>
+          <span class="usuario-flecha"><%- include('../partials/icono', { n: 'chevron' }) %></span>
+        </button>
+        <div class="usuario-dropdown" id="dropdown-usuario" hidden>
+          <form method="GET" action="/logout">
+            <button type="submit"><%- include('../partials/icono', { n: 'salir' }) %> Cerrar sesion</button>
+          </form>
+          </div>
+      </div>
+    </div>
+  </header>
+
+  <% if (typeof flash !== 'undefined' && flash) { %>
+    <div class="contenedor" style="padding-bottom:0;margin-bottom:0;">
+      <div class="alerta <%= flash.tipo %>"><%= flash.texto %></div>
+    </div>
+  <% } %>
+  <main class="contenedor">

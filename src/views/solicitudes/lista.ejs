@@ -1,0 +1,98 @@
+<%- include('../partials/head') %>
+<div class="pagina-titulo">
+  <h1><%= titulo %></h1>
+  <% if (puedeCrear) { %><a class="boton" href="/solicitudes/nueva">+ Nueva solicitud</a><% } %>
+</div>
+
+<div class="panel">
+  <h2>Filtros de busqueda</h2>
+  <form method="GET" action="/solicitudes" class="filtros">
+    <div class="campo">
+      <label for="busqueda">Texto</label>
+      <input type="text" id="busqueda" name="busqueda" value="<%= filtros.busqueda || '' %>" placeholder="Codigo o titulo">
+    </div>
+    <div class="campo">
+      <label for="estado">Estado</label>
+      <select id="estado" name="estado">
+        <option value="">Todos</option>
+        <% Object.keys(estadosEtiquetas).forEach(function(e) { %>
+          <option value="<%= e %>" <%= filtros.estado === e ? 'selected' : '' %>><%= estadosEtiquetas[e] %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="categoriaId">Categoria</label>
+      <select id="categoriaId" name="categoriaId">
+        <option value="">Todas</option>
+        <% categorias.forEach(function(c) { %>
+          <option value="<%= c.id %>" <%= String(filtros.categoriaId) === String(c.id) ? 'selected' : '' %>><%= c.nombre %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="prioridad">Prioridad</label>
+      <select id="prioridad" name="prioridad">
+        <option value="">Todas</option>
+        <% prioridades.forEach(function(p) { %>
+          <option value="<%= p %>" <%= filtros.prioridad === p ? 'selected' : '' %>><%= p %></option>
+        <% }) %>
+      </select>
+    </div>
+    <% if (usuario.rol === 'administrador' || usuario.rol === 'supervisor') { %>
+      <div class="campo">
+        <label for="responsableId">Responsable</label>
+        <select id="responsableId" name="responsableId">
+          <option value="">Todos</option>
+          <option value="sin_asignar" <%= filtros.responsableId === 'sin_asignar' ? 'selected' : '' %>>Sin asignar</option>
+          <% funcionarios.forEach(function(f) { %>
+            <option value="<%= f.id %>" <%= String(filtros.responsableId) === String(f.id) ? 'selected' : '' %>><%= f.nombre %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="desde">Desde</label>
+        <input type="date" id="desde" name="desde" value="<%= filtros.desde || '' %>">
+      </div>
+      <div class="campo">
+        <label for="hasta">Hasta</label>
+        <input type="date" id="hasta" name="hasta" value="<%= filtros.hasta || '' %>">
+      </div>
+    <% } %>
+    <div class="acciones-filtros">
+      <button class="boton" type="submit">Buscar</button>
+      <a class="boton secundario" href="/solicitudes">Limpiar</a>
+    </div>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Resultados (<%= solicitudes.length %>)</h2>
+  <% if (solicitudes.length === 0) { %>
+    <p class="texto-suave sin-margen">No se encontraron solicitudes con los filtros aplicados.</p>
+  <% } else { %>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Codigo</th><th>Titulo</th><th>Solicitante</th><th>Categoria</th><th>Prioridad</th>
+          <th>Estado</th><th>Responsable</th><th>Registro</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% solicitudes.forEach(function(s) { %>
+          <tr>
+            <td><strong><%= s.codigo %></strong></td>
+            <td><%= s.titulo %></td>
+            <td><%= s.solicitante_nombre %></td>
+            <td><%= s.categoria_nombre %></td>
+            <td><span class="insignia ins-prioridad-<%= s.prioridad %>"><%= s.prioridad %></span></td>
+            <td><span class="insignia ins-<%= s.estado %>"><%= estadosEtiquetas[s.estado] %></span></td>
+            <td><%= s.responsable_nombre || '—' %></td>
+            <td class="texto-suave"><%= s.creado_en %></td>
+            <td class="acciones"><a class="boton chico secundario" href="/solicitudes/<%= s.codigo %>">Ver</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= titulo %></title>
+  <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body class="cuerpo-login">
+  <div class="login-marco">
+    <section class="login-izquierda">
+      <span class="login-blob login-blob-uno"></span>
+      <span class="login-blob login-blob-dos"></span>
+      <svg class="login-curva" viewBox="0 0 260 800" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M260 0 120 0 C 210 260, 40 520, 150 800 L260 800 Z" fill="#eef2f9"/>
+        <path d="M120 0 C 210 260, 40 520, 150 800" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2"/>
+      </svg>
+      <div class="login-izquierda-contenido">
+        <div class="login-logo">
+          <img src="/img/escudo-cul.png" alt="Escudo CUL">
+          <strong>CUL</strong>
+        </div>
+        <div class="login-linea"></div>
+        <p class="login-lema">Sistema de Gestion de Servicios<br>y Solicitudes Universitarias</p>
+        <ul class="login-funciones">
+          <li><span class="login-funcion-icono"><%- include('../partials/icono', { n: 'documento' }) %></span> Gestiona solicitudes</li>
+          <li><span class="login-funcion-icono"><%- include('../partials/icono', { n: 'capas' }) %></span> Realiza seguimiento</li>
+          <li><span class="login-funcion-icono"><%- include('../partials/icono', { n: 'campana' }) %></span> Recibe notificaciones</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="login-derecha">
+      <div class="login-tarjeta">
+        <h2>Iniciar sesion</h2>
+        <p class="login-subtitulo">Accede a la plataforma de servicios universitarios</p>
+        <% if (error) { %>
+          <div class="alerta error"><%= error %></div>
+        <% } %>
+        <form method="POST" action="/login">
+          <div class="login-campo">
+            <span class="login-campo-icono"><%- include('../partials/icono', { n: 'correo' }) %></span>
+            <input type="email" name="email" placeholder="Correo institucional" required autofocus>
+          </div>
+          <div class="login-campo">
+            <span class="login-campo-icono"><%- include('../partials/icono', { n: 'candado' }) %></span>
+            <input type="password" name="password" id="clave" placeholder="Contrasena" required>
+            <button class="login-ojo" type="button" id="boton-ojo" aria-label="Mostrar u ocultar contrasena">
+              <%- include('../partials/icono', { n: 'ojo', cls: 'icono-ver' }) %>
+              <%- include('../partials/icono', { n: 'ojo_off', cls: 'icono-ocultar' }) %>
+            </button>
+          </div>
+          <button class="login-boton" type="submit">
+            Iniciar sesion <%- include('../partials/icono', { n: 'flecha' }) %>
+          </button>
+        </form>
+        <div class="login-demo">
+          <span class="login-demo-icono"><%- include('../partials/icono', { n: 'info' }) %></span>
+          <div class="login-demo-texto">
+            <strong>Cuentas de demostracion</strong>
+            <p>
+              admin@universidad.edu &nbsp;/&nbsp; Admin123!<br>
+              ana@universidad.edu &nbsp;/&nbsp; Estu123!<br>
+              valeria@universidad.edu &nbsp;/&nbsp; Estu123!<br>
+              luis@universidad.edu &nbsp;/&nbsp; Func123!<br>
+              maria@universidad.edu &nbsp;/&nbsp; Super123!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="/js/interfaz.js"></script>
+</body>
+</html>

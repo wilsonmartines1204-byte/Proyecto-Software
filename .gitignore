@@ -1,0 +1,28 @@
+# Dependencias y artefactos generados
+node_modules/
+
+# Base de datos SQLite (se regenera con npm run init-db)
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Registros temporales
+*.log
+npm-debug.log*
+
+# Sistema
+Thumbs.db
+.DS_Store
+
+# Editores
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Cobertura
+coverage/
+.nyc_output/

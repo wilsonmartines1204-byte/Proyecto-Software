@@ -1,0 +1,156 @@
+<%- include('../partials/head') %>
+<div class="pagina-titulo">
+  <h1>Solicitud <%= solicitud.codigo %></h1>
+  <a class="boton secundario" href="/solicitudes">Volver al listado</a>
+</div>
+
+<% if (typeof query !== 'undefined' && query.error) { %>
+  <div class="alerta error"><%= query.error %></div>
+<% } %>
+
+<div class="detalle-grid">
+  <div>
+    <div class="panel">
+      <h2><%= solicitud.titulo %></h2>
+      <div class="caja-estados">
+        <span class="insignia ins-<%= solicitud.estado %>"><%= estadosEtiquetas[solicitud.estado] %></span>
+        <span class="insignia ins-prioridad-<%= solicitud.prioridad %>">Prioridad: <%= solicitud.prioridad %></span>
+        <span class="insignia ins-rol"><%= solicitud.categoria_nombre %></span>
+      </div>
+      <table class="tabla">
+        <tr><th>Codigo</th><td><%= solicitud.codigo %></td></tr>
+        <tr><th>Fecha de registro</th><td><%= solicitud.creado_en %></td></tr>
+        <tr><th>Ultima actualizacion</th><td><%= solicitud.actualizado_en %></td></tr>
+        <tr><th>Solicitante</th><td><%= solicitud.solicitante_nombre %> (<%= solicitud.solicitante_email %>)</td></tr>
+        <tr><th>Responsable</th><td><%= solicitud.responsable_nombre || 'Sin asignar' %></td></tr>
+        <tr><th>Descripcion</th><td style="white-space:pre-wrap;"><%= solicitud.descripcion %></td></tr>
+        <% if (solicitud.solucion) { %>
+          <tr><th>Solucion</th><td style="white-space:pre-wrap;"><%= solicitud.solucion %></td></tr>
+        <% } %>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Acciones de estado</h2>
+      <% if (!transiciones.length) { %>
+        <p class="texto-suave sin-margen">Esta solicitud se encuentra en estado <strong><%= estadosEtiquetas[solicitud.estado] %></strong> y no admite mas transiciones para su rol.</p>
+      <% } %>
+      <% var vioAsignacion = false; %>
+      <% transiciones.forEach(function(t) { %>
+        <% if (t.a === 'ASIGNADA') { %>
+          <% if (!vioAsignacion) { %>
+            <% vioAsignacion = true; %>
+            <form method="POST" action="/solicitudes/<%= solicitud.codigo %>/asignar" style="margin-bottom:1rem; padding-bottom:.9rem; border-bottom:1px dashed var(--borde);">
+              <div class="acciones-estado">
+                <div class="campo">
+                  <label for="responsableId">Nuevo responsable (funcionario) *</label>
+                  <select id="responsableId" name="responsableId" required>
+                    <option value="">Seleccione...</option>
+                    <% funcionarios.forEach(function(f) { %>
+                      <option value="<%= f.id %>" <%= solicitud.responsable_id === f.id ? 'selected' : '' %>><%= f.nombre %></option>
+                    <% }) %>
+                  </select>
+                </div>
+                <div class="campo" style="flex:1; min-width:220px;">
+                  <label for="motivoAsig">Observacion (opcional)</label>
+                  <input type="text" id="motivoAsig" name="motivo" placeholder="Motivo de la asignacion">
+                </div>
+                <div class="campo">
+                  <button class="boton" type="submit"><%= t.descripcion %></button>
+                </div>
+              </div>
+            </form>
+          <% } %>
+        <% } else { %>
+          <form method="POST" action="/solicitudes/<%= solicitud.codigo %>/estado" style="margin-bottom:.9rem; padding-bottom:.9rem; border-bottom:1px dashed var(--borde);">
+            <input type="hidden" name="nuevoEstado" value="<%= t.a %>">
+            <p class="sin-margen" style="margin-bottom:.5rem;">
+              <span class="insignia ins-<%= t.a %>"><%= estadosEtiquetas[t.a] %></span>
+              <span class="texto-suave"><%= t.descripcion %></span>
+            </p>
+            <% if (t.requiere.includes('motivo')) { %>
+              <div class="campo">
+                <label>Motivo u observacion *</label>
+                <input type="text" name="motivo" required placeholder="Indique el motivo">
+              </div>
+            <% } %>
+            <% if (t.requiere.includes('solucion')) { %>
+              <div class="campo">
+                <label>Solucion u observacion final *</label>
+                <textarea name="solucion" required placeholder="Describa la solucion aplicada"></textarea>
+              </div>
+            <% } %>
+            <button class="boton chico" type="submit"><%= t.descripcion %> → <%= estadosEtiquetas[t.a] %></button>
+          </form>
+        <% } %>
+      <% }) %>
+    </div>
+
+    <div class="panel">
+      <h2>Observaciones (<%= observaciones.length %>)</h2>
+      <% if (puedeObservar && solicitud.estado !== 'CERRADA') { %>
+        <form method="POST" action="/solicitudes/<%= solicitud.codigo %>/observaciones">
+          <div class="campo">
+            <label for="texto">Nueva observacion</label>
+            <textarea id="texto" name="texto" required placeholder="Escriba una observacion o comentario..."></textarea>
+          </div>
+          <div class="campo">
+            <label>
+              <input type="checkbox" name="es_solucion" value="on">
+              Marcar como solucion final
+            </label>
+          </div>
+          <div class="grupo-acciones">
+            <button class="boton secundario" type="submit">Agregar observacion</button>
+          </div>
+        </form>
+        <hr style="border:none;border-top:1px solid var(--borde);margin:1rem 0;">
+      <% } %>
+      <% if (!observaciones.length) { %>
+        <p class="texto-suave sin-margen">Sin observaciones registradas.</p>
+      <% } %>
+      <% observaciones.forEach(function(o) { %>
+        <div class="observacion <%= o.es_solucion ? 'solucion' : '' %>">
+          <div class="meta">
+            <strong><%= o.usuario_nombre %></strong> · <%= o.usuario_rol %> · <%= o.fecha %>
+            <% if (o.es_solucion) { %><span class="insignia ins-RESUELTA">Solucion final</span><% } %>
+          </div>
+          <div><%= o.texto %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2>Historial de cambios</h2>
+      <ul class="lista-historial">
+        <% historial.forEach(function(h) { %>
+          <li>
+            <div>
+              <% if (h.estado_anterior) { %>
+                <span class="insignia ins-<%= h.estado_anterior %>"><%= estadosEtiquetas[h.estado_anterior] %></span>
+                →
+              <% } %>
+              <span class="insignia ins-<%= h.estado_nuevo %>"><%= estadosEtiquetas[h.estado_nuevo] %></span>
+            </div>
+            <div class="quien"><%= h.usuario_nombre %> <span class="texto-suave">(<%= h.usuario_rol %>)</span></div>
+            <% if (h.observacion) { %><div><%= h.observacion %></div><% } %>
+            <div class="fecha"><%= h.fecha %></div>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>Reglas aplicadas</h2>
+      <ul class="texto-suave" style="padding-left:1.1rem; margin:.2rem 0;">
+        <li>Ciclo: Registrada → Asignada → En proceso → Resuelta → Cerrada</li>
+        <li>Toda transicion guarda fecha, usuario y motivo</li>
+        <li>Resuelta exige solucion final</li>
+        <li>Cerrada solo se reabiere por autorizacion de administrador o supervisor</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

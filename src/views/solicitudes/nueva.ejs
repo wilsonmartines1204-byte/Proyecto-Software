@@ -1,0 +1,48 @@
+<%- include('../partials/head') %>
+<div class="pagina-titulo">
+  <h1>Registrar solicitud</h1>
+  <a class="boton secundario" href="/solicitudes">Volver</a>
+</div>
+
+<% if (error) { %><div class="alerta error"><%= error %></div><% } %>
+
+<div class="panel" style="max-width:760px;">
+  <h2>Datos de la solicitud</h2>
+  <form method="POST" action="/solicitudes">
+    <div class="campo">
+      <label for="titulo">Titulo *</label>
+      <input type="text" id="titulo" name="titulo" value="<%= datos.titulo || '' %>" required maxlength="120"
+             placeholder="Ej. Cambio de seccion de Calculo I">
+    </div>
+    <div class="fila-campos">
+      <div class="campo">
+        <label for="categoriaId">Categoria *</label>
+        <select id="categoriaId" name="categoriaId" required>
+          <option value="">Seleccione...</option>
+          <% categorias.forEach(function(c) { %>
+            <option value="<%= c.id %>" <%= String(datos.categoriaId) === String(c.id) ? 'selected' : '' %>><%= c.nombre %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="prioridad">Prioridad *</label>
+        <select id="prioridad" name="prioridad" required>
+          <% prioridades.forEach(function(p) { %>
+            <option value="<%= p %>" <%= datos.prioridad === p ? 'selected' : '' %>><%= p %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+    <div class="campo">
+      <label for="descripcion">Descripcion detallada *</label>
+      <textarea id="descripcion" name="descripcion" required
+        placeholder="Describa su solicitud: contexto, fechas, espacios, etc."><%= datos.descripcion || '' %></textarea>
+      <div class="ayuda">Estado inicial: Registrada. Un administrador o supervisor asignara un responsable.</div>
+    </div>
+    <div class="grupo-acciones">
+      <button class="boton" type="submit">Registrar solicitud</button>
+      <a class="boton secundario" href="/solicitudes">Cancelar</a>
+    </div>
+  </form>
+</div>
+<%- include('../partials/footer') %>

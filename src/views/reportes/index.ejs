@@ -1,0 +1,91 @@
+<%- include('../partials/head') %>
+<div class="pagina-titulo">
+  <h1>Reportes y estadisticas</h1>
+</div>
+
+<div class="panel">
+  <h2>Consultas por periodo</h2>
+  <form method="GET" action="/reportes" class="filtros">
+    <div class="campo">
+      <label for="desde">Desde</label>
+      <input type="date" id="desde" name="desde" value="<%= filtros.desde %>">
+    </div>
+    <div class="campo">
+      <label for="hasta">Hasta</label>
+      <input type="date" id="hasta" name="hasta" value="<%= filtros.hasta %>">
+    </div>
+    <div class="acciones-filtros">
+      <button class="boton" type="submit">Consultar</button>
+      <a class="boton secundario" href="/reportes">Periodo completo</a>
+    </div>
+  </form>
+  <div class="tarjetas compactas" style="margin-top:1rem; margin-bottom:0;">
+    <div class="tarjeta"><div class="valor"><%= periodo.total %></div><div class="etiqueta">Solicitudes en el periodo</div></div>
+    <div class="tarjeta"><div class="valor"><%= periodo.resueltas %></div><div class="etiqueta">Resueltas/Cerradas</div></div>
+    <div class="tarjeta destacado"><div class="valor"><%= periodo.tasaResolucion %>%</div><div class="etiqueta">Tasa de resolucion</div></div>
+    <div class="tarjeta"><div class="valor"><%= resumen.tiempoPromedioHoras !== null ? resumen.tiempoPromedioHoras + ' h' : '—' %></div><div class="etiqueta">Tiempo promedio de resolucion</div></div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Solicitudes por estado</h2>
+  <% var maxEstado = Math.max(1, ...resumen.porEstado.map(function(e){ return e.total; })); %>
+  <% if (!resumen.porEstado.length) { %><p class="texto-suave sin-margen">Sin datos.</p><% } %>
+  <% resumen.porEstado.forEach(function(e) { %>
+    <div class="barra-estadistica">
+      <div class="nombre"><span class="insignia ins-<%= e.estado %>"><%= estadosEtiquetas[e.estado] %></span></div>
+      <div class="pista"><div class="relleno" style="width: <%= Math.round((e.total / maxEstado) * 100) %>%"></div></div>
+      <div class="numero"><%= e.total %> (<%= e.porcentaje %>%)</div>
+    </div>
+  <% }) %>
+</div>
+
+<div class="panel">
+  <h2>Solicitudes por categoria</h2>
+  <table class="tabla">
+    <thead><tr><th>Categoria</th><th>Total</th></tr></thead>
+    <tbody>
+      <% resumen.porCategoria.forEach(function(c) { %>
+        <tr><td><%= c.categoria %></td><td><%= c.total %></td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>Solicitudes por prioridad</h2>
+  <table class="tabla">
+    <thead><tr><th>Prioridad</th><th>Total</th></tr></thead>
+    <tbody>
+      <% resumen.porPrioridad.forEach(function(p) { %>
+        <tr><td><span class="insignia ins-prioridad-<%= p.prioridad %>"><%= p.prioridad %></span></td><td><%= p.total %></td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>Carga por responsable</h2>
+  <table class="tabla">
+    <thead><tr><th>Funcionario</th><th>Asignadas</th><th>Resueltas/Cerradas</th></tr></thead>
+    <tbody>
+      <% resumen.porResponsable.forEach(function(r) { %>
+        <tr><td><%= r.responsable %></td><td><%= r.total %></td><td><%= r.resueltas || 0 %></td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>Solicitudes en el periodo seleccionado</h2>
+  <table class="tabla">
+    <thead><tr><th>Estado</th><th>Total</th></tr></thead>
+    <tbody>
+      <% periodo.porEstado.forEach(function(e) { %>
+        <tr><td><span class="insignia ins-<%= e.estado %>"><%= estadosEtiquetas[e.estado] %></span></td><td><%= e.total %></td></tr>
+      <% }) %>
+      <% if (!periodo.porEstado.length) { %><tr><td colspan="2" class="texto-suave">Sin solicitudes en el rango indicado.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,29 @@
+{
+  "name": "sgsu-sistema-gestion-solicitudes",
+  "version": "1.0.0",
+  "description": "SGSU - Sistema de Gestion de Servicios y Solicitudes Universitarias (Proyecto Final Ingenieria del Software)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "init-db": "node scripts/init-db.js",
+    "test": "node --test \"tests/**/*.test.js\"",
+    "coverage": "node --test --experimental-test-coverage \"tests/**/*.test.js\""
+  },
+  "keywords": [
+    "solicitudes",
+    "universidad",
+    "gestion",
+    "ingenieria-software"
+  ],
+  "author": "Equipo Proyecto Final - Ingenieria del Software",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

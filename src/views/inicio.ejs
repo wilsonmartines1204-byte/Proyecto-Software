@@ -1,0 +1,144 @@
+<%- include('partials/head') %>
+<%
+  var iconosTarjetas = usuario.rol === 'estudiante' ? ['documento', 'reloj', 'visto', 'campana']
+    : usuario.rol === 'funcionario' ? ['documento', 'refrescar', 'reloj', 'campana']
+    : ['documento', 'reloj', 'refrescar', 'visto'];
+  function incluirIcono(i) { return iconosTarjetas[i] || 'documento'; }
+%>
+<div class="pagina-titulo">
+  <div class="pagina-titulo-texto">
+    <h1>Panel principal</h1>
+    <p class="pagina-subtitulo">Gestion de solicitudes universitarias</p>
+  </div>
+  <% if (['estudiante', 'administrador', 'supervisor'].includes(usuario.rol)) { %>
+    <a class="boton boton-grande" href="/solicitudes/nueva"><%- include('partials/icono', { n: 'mas' }) %> Nueva solicitud</a>
+  <% } %>
+</div>
+
+<div class="tarjetas">
+  <% if (usuario.rol === 'estudiante') { %>
+    <div class="tarjeta">
+      <div class="tarjeta-icono ti-0"><%- include('partials/icono', { n: incluirIcono(0) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= resumen.total %></div><div class="etiqueta">Mis solicitudes</div></div>
+      <svg class="chispa chispa-0" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,18 12,14 24,16 36,9 48,12 64,4"/></svg>
+    </div>
+    <div class="tarjeta destacado">
+      <div class="tarjeta-icono ti-1"><%- include('partials/icono', { n: incluirIcono(1) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= ['REGISTRADA','ASIGNADA','EN_PROCESO','REABIERTA'].reduce((n,e)=>n+(resumen.porEstado[e]||0),0) %></div><div class="etiqueta">Abiertas</div></div>
+      <svg class="chispa chispa-1" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,16 12,17 24,11 36,13 48,7 64,6"/></svg>
+    </div>
+    <div class="tarjeta">
+      <div class="tarjeta-icono ti-2"><%- include('partials/icono', { n: incluirIcono(2) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= (resumen.porEstado.RESUELTA||0) + (resumen.porEstado.CERRADA||0) %></div><div class="etiqueta">Resueltas/Cerradas</div></div>
+      <svg class="chispa chispa-2" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,19 12,15 24,16 36,10 48,8 64,5"/></svg>
+    </div>
+    <div class="tarjeta">
+      <div class="tarjeta-icono ti-3"><%- include('partials/icono', { n: incluirIcono(3) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= noLeidas %></div><div class="etiqueta">Notificaciones nuevas</div></div>
+      <svg class="chispa chispa-3" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,17 12,12 24,14 36,8 48,10 64,3"/></svg>
+    </div>
+  <% } else if (usuario.rol === 'funcionario') { %>
+    <div class="tarjeta">
+      <div class="tarjeta-icono ti-0"><%- include('partials/icono', { n: incluirIcono(0) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= resumen.asignadas.length %></div><div class="etiqueta">Solicitudes a mi cargo</div></div>
+      <svg class="chispa chispa-0" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,18 12,14 24,16 36,9 48,12 64,4"/></svg>
+    </div>
+    <div class="tarjeta destacado">
+      <div class="tarjeta-icono ti-1"><%- include('partials/icono', { n: incluirIcono(1) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= resumen.asignadas.filter(s=>s.estado==='EN_PROCESO').length %></div><div class="etiqueta">En proceso</div></div>
+      <svg class="chispa chispa-1" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,16 12,17 24,11 36,13 48,7 64,6"/></svg>
+    </div>
+    <div class="tarjeta">
+      <div class="tarjeta-icono ti-2"><%- include('partials/icono', { n: incluirIcono(2) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= resumen.asignadas.filter(s=>s.estado==='ASIGNADA').length %></div><div class="etiqueta">Por iniciar</div></div>
+      <svg class="chispa chispa-2" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,19 12,15 24,16 36,10 48,8 64,5"/></svg>
+    </div>
+    <div class="tarjeta">
+      <div class="tarjeta-icono ti-3"><%- include('partials/icono', { n: incluirIcono(3) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= noLeidas %></div><div class="etiqueta">Notificaciones nuevas</div></div>
+      <svg class="chispa chispa-3" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,17 12,12 24,14 36,8 48,10 64,3"/></svg>
+    </div>
+  <% } else { %>
+    <div class="tarjeta">
+      <div class="tarjeta-icono ti-0"><%- include('partials/icono', { n: incluirIcono(0) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= resumen.total %></div><div class="etiqueta">Solicitudes totales</div></div>
+      <svg class="chispa chispa-0" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,18 12,14 24,16 36,9 48,12 64,4"/></svg>
+    </div>
+    <div class="tarjeta destacado">
+      <div class="tarjeta-icono ti-1"><%- include('partials/icono', { n: incluirIcono(1) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= resumen.pendientesAsignar || 0 %></div><div class="etiqueta">Pendientes de asignar</div></div>
+      <svg class="chispa chispa-1" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,16 12,17 24,11 36,13 48,7 64,6"/></svg>
+    </div>
+    <div class="tarjeta">
+      <div class="tarjeta-icono ti-2"><%- include('partials/icono', { n: incluirIcono(2) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= (resumen.porEstado.EN_PROCESO||0) %></div><div class="etiqueta">En proceso</div></div>
+      <svg class="chispa chispa-2" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,19 12,15 24,16 36,10 48,8 64,5"/></svg>
+    </div>
+    <div class="tarjeta">
+      <div class="tarjeta-icono ti-3"><%- include('partials/icono', { n: incluirIcono(3) }) %></div>
+      <div class="tarjeta-cuerpo"><div class="valor"><%= (resumen.porEstado.RESUELTA||0) + (resumen.porEstado.CERRADA||0) %></div><div class="etiqueta">Resueltas/Cerradas</div></div>
+      <svg class="chispa chispa-3" viewBox="0 0 64 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,17 12,12 24,14 36,8 48,10 64,3"/></svg>
+    </div>
+  <% } %>
+</div>
+
+<div class="panel">
+  <div class="panel-cabecera">
+    <div class="panel-titulo">
+      <span class="panel-icono"><%- include('partials/icono', { n: 'lista' }) %></span>
+      <h2>Ultimas solicitudes</h2>
+    </div>
+    <% if (recientes.length > 0) { %>
+      <div class="campo-buscar">
+        <%- include('partials/icono', { n: 'buscar' }) %>
+        <input type="search" id="buscar-tabla" placeholder="Buscar solicitud..." autocomplete="off">
+      </div>
+    <% } %>
+  </div>
+  <% if (recientes.length === 0) { %>
+    <p class="texto-suave sin-margen">No hay solicitudes registradas aun.</p>
+  <% } else { %>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Codigo</th><th>Titulo</th><th>Categoria</th><th>Prioridad</th><th>Estado</th><th>Responsable</th><th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% recientes.forEach(function(s) { %>
+          <tr>
+            <td><a href="/solicitudes/<%= s.codigo %>"><strong><%= s.codigo %></strong></a></td>
+            <td><%= s.titulo %></td>
+            <td><%= s.categoria_nombre %></td>
+            <td><span class="insignia ins-prioridad-<%= s.prioridad %>"><%= s.prioridad %></span></td>
+            <td><span class="insignia ins-<%= s.estado %>"><%= estadosEtiquetas[s.estado] %></span></td>
+            <td><%= s.responsable_nombre || 'Sin asignar' %></td>
+            <td class="texto-suave fecha-tabla"><%- include('partials/icono', { n: 'calendario' }) %> <%= s.creado_en %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<div class="panel">
+  <div class="panel-cabecera">
+    <div class="panel-titulo">
+      <span class="panel-icono"><%- include('partials/icono', { n: 'inicio' }) %></span>
+      <h2>Accesos rapidos</h2>
+    </div>
+  </div>
+  <div class="grupo-acciones">
+    <a class="boton secundario" href="/solicitudes">Ver solicitudes</a>
+    <% if (usuario.rol === 'administrador') { %>
+      <a class="boton secundario" href="/usuarios">Gestionar usuarios</a>
+      <a class="boton secundario" href="/categorias">Gestionar categorias</a>
+      <a class="boton secundario" href="/reportes">Ver reportes</a>
+    <% } %>
+    <% if (usuario.rol === 'supervisor') { %>
+      <a class="boton secundario" href="/reportes">Reportes e indicadores</a>
+    <% } %>
+    <a class="boton secundario" href="/notificaciones">Notificaciones (<%= noLeidas %> nuevas)</a>
+  </div>
+</div>
+<%- include('partials/footer') %>
